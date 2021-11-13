@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Utils;
+namespace App\Services;
 
 use App\Enums\SpatieMediaMethodEnum;
-use App\Services\ImageService;
 use Illuminate\Database\Eloquent\Model;
 
-class MediaTools
+class MediaService
 {
     public function __construct(
         public Model $model,
@@ -21,9 +20,11 @@ class MediaTools
 
     public function setMedia(string $data)
     {
+        $extension = $this->extension;
         if (! $this->extension) {
             $extension = config('bookshelves.cover_extension');
         }
+        $collection = $this->collection;
         if (! $this->collection) {
             $collection = $this->disk;
         }
@@ -41,9 +42,11 @@ class MediaTools
         if (! $this->collection) {
             $collection = $this->disk;
         }
+        // @phpstan-ignore-next-line
         $image = $this->model->getFirstMediaPath($collection);
 
         $color = ImageService::simple_color_thief($image);
+        // @phpstan-ignore-next-line
         $media = $this->model->getFirstMedia($collection);
         $media->setCustomProperty('color', $color);
         $media->save();
